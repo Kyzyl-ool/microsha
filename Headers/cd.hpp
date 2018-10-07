@@ -16,6 +16,7 @@ class cd: public Program {
 private:
     
 public:
+    cd();
     void run(void* args, size_t size);
 };
 

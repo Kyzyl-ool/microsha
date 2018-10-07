@@ -9,6 +9,11 @@
 #include "microsha.hpp"
 #include "cd.hpp"
 
+cd::cd()
+{
+    name = "cd";
+}
+
 void cd::run(void *args, size_t size)
 {
     

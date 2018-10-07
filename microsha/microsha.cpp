@@ -14,7 +14,7 @@
 microsha::microsha(std::string path):
 path(path)
 {
-
+    name = "microsha";
 }
 
 void microsha::run(void *args, size_t size)
@@ -31,10 +31,7 @@ void microsha::run(void *args, size_t size)
 void microsha::print_invitation()
 {
     printf("%s", last_symbol_in_string(path.c_str(), '/'));
-    if(superuser)
-        printf("!");
-    else
-        printf(">");
+    printf("%c", '>' - 29*superuser);
 }
 
 void microsha::print_version()
