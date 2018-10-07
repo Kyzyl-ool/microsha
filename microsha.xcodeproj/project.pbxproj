@@ -10,6 +10,7 @@
 		17753A502169FAAA000E2A50 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17753A4F2169FAAA000E2A50 /* main.cpp */; };
 		17753A582169FAD1000E2A50 /* working_with_strings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17753A562169FAD1000E2A50 /* working_with_strings.cpp */; };
 		17753A5B2169FAD9000E2A50 /* microsha.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17753A592169FAD9000E2A50 /* microsha.cpp */; };
+		17753A612169FE53000E2A50 /* cd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17753A5F2169FE53000E2A50 /* cd.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +32,8 @@
 		17753A572169FAD1000E2A50 /* working_with_strings.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = working_with_strings.hpp; sourceTree = "<group>"; };
 		17753A592169FAD9000E2A50 /* microsha.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = microsha.cpp; sourceTree = "<group>"; };
 		17753A5A2169FAD9000E2A50 /* microsha.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = microsha.hpp; sourceTree = "<group>"; };
+		17753A5F2169FE53000E2A50 /* cd.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cd.cpp; sourceTree = "<group>"; };
+		17753A602169FE53000E2A50 /* cd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cd.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +50,7 @@
 		17753A432169FAA9000E2A50 = {
 			isa = PBXGroup;
 			children = (
+				17753A5E2169FD0E000E2A50 /* Headers */,
 				17753A4E2169FAA9000E2A50 /* microsha */,
 				17753A4D2169FAA9000E2A50 /* Products */,
 			);
@@ -63,10 +67,10 @@
 		17753A4E2169FAA9000E2A50 /* microsha */ = {
 			isa = PBXGroup;
 			children = (
-				17753A4F2169FAAA000E2A50 /* main.cpp */,
-				17753A562169FAD1000E2A50 /* working_with_strings.cpp */,
 				17753A592169FAD9000E2A50 /* microsha.cpp */,
-				17753A5E2169FD0E000E2A50 /* Headers */,
+				17753A562169FAD1000E2A50 /* working_with_strings.cpp */,
+				17753A5F2169FE53000E2A50 /* cd.cpp */,
+				17753A4F2169FAAA000E2A50 /* main.cpp */,
 			);
 			path = microsha;
 			sourceTree = "<group>";
@@ -74,8 +78,9 @@
 		17753A5E2169FD0E000E2A50 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				17753A572169FAD1000E2A50 /* working_with_strings.hpp */,
 				17753A5A2169FAD9000E2A50 /* microsha.hpp */,
+				17753A572169FAD1000E2A50 /* working_with_strings.hpp */,
+				17753A602169FE53000E2A50 /* cd.hpp */,
 			);
 			path = Headers;
 			sourceTree = "<group>";
@@ -138,6 +143,7 @@
 			files = (
 				17753A5B2169FAD9000E2A50 /* microsha.cpp in Sources */,
 				17753A582169FAD1000E2A50 /* working_with_strings.cpp in Sources */,
+				17753A612169FE53000E2A50 /* cd.cpp in Sources */,
 				17753A502169FAAA000E2A50 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

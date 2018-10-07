@@ -7,6 +7,7 @@
 //
 
 #include "microsha.hpp"
+#include "working_with_strings.hpp"
 #include <string>
 #include <iostream>
 
@@ -21,4 +22,19 @@ std::string read_stdin()
     std::cin >> result;
     
     return result;
+}
+
+microsha::microsha(std::string path):
+path(path)
+{
+
+}
+
+void microsha::run(void *args, size_t size)
+{
+    printf("%s", last_symbol_in_string(path.c_str(), '/'));
+    if(superuser)
+        printf("!");
+    else
+        printf(">");
 }
