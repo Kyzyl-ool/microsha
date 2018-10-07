@@ -65,11 +65,19 @@
 			children = (
 				17753A4F2169FAAA000E2A50 /* main.cpp */,
 				17753A562169FAD1000E2A50 /* working_with_strings.cpp */,
-				17753A572169FAD1000E2A50 /* working_with_strings.hpp */,
 				17753A592169FAD9000E2A50 /* microsha.cpp */,
-				17753A5A2169FAD9000E2A50 /* microsha.hpp */,
+				17753A5E2169FD0E000E2A50 /* Headers */,
 			);
 			path = microsha;
+			sourceTree = "<group>";
+		};
+		17753A5E2169FD0E000E2A50 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				17753A572169FAD1000E2A50 /* working_with_strings.hpp */,
+				17753A5A2169FAD9000E2A50 /* microsha.hpp */,
+			);
+			path = Headers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
