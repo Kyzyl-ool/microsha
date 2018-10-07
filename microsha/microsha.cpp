@@ -11,19 +11,6 @@
 #include <string>
 #include <iostream>
 
-bool am_i_super(const char* argument)
-{
-    return (!strcmp(argument, "-superman")) ? true : false;
-}
-
-std::string read_stdin()
-{
-    std::string result;
-    std::cin >> result;
-    
-    return result;
-}
-
 microsha::microsha(std::string path):
 path(path)
 {
@@ -32,9 +19,36 @@ path(path)
 
 void microsha::run(void *args, size_t size)
 {
+    print_invitation();
+    read_stdin();
+    while (read_buffer != "exit") {
+        print(read_buffer);
+        print_invitation();
+        read_stdin();
+    }
+}
+
+void microsha::print_invitation()
+{
     printf("%s", last_symbol_in_string(path.c_str(), '/'));
     if(superuser)
         printf("!");
     else
         printf(">");
+}
+
+void microsha::print_version()
+{
+    printf(VERSION);
+    printf("\n");
+}
+
+void microsha::read_stdin()
+{
+    getline(std::cin, read_buffer);
+}
+
+void microsha::print(std::string str)
+{
+    std::cout << str << std::endl;
 }

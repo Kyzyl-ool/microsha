@@ -9,6 +9,8 @@
 #ifndef microsha_hpp
 #define microsha_hpp
 
+#define VERSION "1.0"
+
 #include <stdio.h>
 #include <string>
 
@@ -16,6 +18,8 @@ class Program
 {
 protected:
     std::string name;
+    std::string read_buffer;
+    bool working = true;
 public:
     virtual void run(void* args, size_t size) {;}
 };
@@ -30,9 +34,10 @@ public:
     microsha(std::string path);
     
     void run(void* args = NULL, size_t size = 0);
+    void print_invitation();
+    void print_version();
+    void read_stdin();
+    void print(std::string str);
 };
-
-bool am_i_super(const char* argument);
-std::string read_stdin();
 
 #endif /* microsha_hpp */
