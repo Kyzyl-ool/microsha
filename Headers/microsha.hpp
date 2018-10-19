@@ -10,6 +10,11 @@
 #define microsha_hpp
 
 #define VERSION "1.0"
+const char METASYMBOL_GREAT = '>';
+const char METASYMBOL_LESS  = '<';
+const char METASYMBOL_DASH  = '|';
+const char METASYMBOL_STAR  = '*';
+const char METASYMBOL_QUESTION = '?';
 
 #include <stdio.h>
 #include <string>
