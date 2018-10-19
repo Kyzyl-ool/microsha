@@ -36,6 +36,9 @@ public:
     
     template <typename T>
     void print(T str);
+    
+    void cd(std::string arg = "");
+    void pwd();
 };
 
 #endif /* microsha_hpp */
