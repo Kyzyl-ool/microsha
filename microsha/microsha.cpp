@@ -14,15 +14,16 @@
 microsha::microsha(std::string path):
 path(path)
 {
-    name = "microsha";
+    
 }
 
 void microsha::run(void *args, size_t size)
 {
     print_invitation();
     read_stdin();
-    while (read_buffer != "exit") {
-        print(read_buffer);
+    while (IO_buffer != "exit") {
+        std::vector<std::string> split = split_string_by_separator(IO_buffer, ' ');
+        print(split.size());
         print_invitation();
         read_stdin();
     }
@@ -42,10 +43,11 @@ void microsha::print_version()
 
 void microsha::read_stdin()
 {
-    getline(std::cin, read_buffer);
+    getline(std::cin, IO_buffer);
 }
 
-void microsha::print(std::string str)
+template <typename T>
+void microsha::print(T value)
 {
-    std::cout << str << std::endl;
+    std::cout << value << std::endl;
 }

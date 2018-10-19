@@ -14,22 +14,13 @@
 #include <stdio.h>
 #include <string>
 
-class Program
-{
-protected:
-    std::string name;
-    std::string read_buffer;
-    bool working = true;
-public:
-    virtual void run(void* args, size_t size) {;}
-};
-
-
-class microsha: public Program
+class microsha
 {
 private:
-    std::string path;
+    std::string path = "";
+    std::string IO_buffer = "";
     bool superuser = false;
+    bool working = true;
 public:
     microsha(std::string path);
     
@@ -37,7 +28,9 @@ public:
     void print_invitation();
     void print_version();
     void read_stdin();
-    void print(std::string str);
+    
+    template <typename T>
+    void print(T str);
 };
 
 #endif /* microsha_hpp */
