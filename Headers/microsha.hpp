@@ -38,6 +38,7 @@ public:
     void print_version();
     void read_stdin();
     void add_slash_at_end(std::string str);
+    void execute(int program_number, STANDARD_IO_ARGS, std::vector<std::string> arguments);
     
     template <typename T>
     void print(T str);
@@ -45,6 +46,7 @@ public:
     
     void cd(STANDARD_IO_ARGS, std::vector<std::string> args);
     void pwd(STANDARD_IO_ARGS);
+    void time(STANDARD_IO_ARGS, std::vector<std::string> command);
     
     std::string get_current_path();
 };

@@ -14,6 +14,7 @@
 #include <fnmatch.h>
 #include <string>
 #include "stdio.h"
+#include <time.h>
 
 const int MAXDIR = 2048;
 
@@ -34,14 +35,7 @@ void microsha::run(void *args, size_t size)
         
 
         //WORK SECTION
-        switch (hasbtable[command]) {
-            case 1:
-                cd(0, 1, arguments);
-                break;
-            default:
-                print("Unknown command.");
-        }
-        
+        execute(hasbtable[command], 0, 1, arguments);
         if (errno != 0) {
             print(strerror(errno));
         }
@@ -111,4 +105,23 @@ std::string microsha::get_current_path()
 void microsha::pwd(STANDARD_IO_ARGS)
 {
     dprintf(fdo, "%s\n", get_current_path().c_str());
+}
+
+void microsha::time(STANDARD_IO_ARGS, std::vector<std::string> command)
+{
+    
+//    clock_t start = clock();
+
+}
+
+void microsha::execute(int program_number, STANDARD_IO_ARGS, std::vector<std::string> arguments)
+{
+    switch (program_number) {
+        case 1:
+            cd(fdi, fdo, arguments);
+            break;
+        default:
+            print("Unknown command.\n");
+            break;
+    }
 }
