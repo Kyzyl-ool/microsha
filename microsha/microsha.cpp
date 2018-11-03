@@ -21,25 +21,35 @@ const int MAXDIR = 2048;
 microsha::microsha(std::string path)
 {
     hasbtable["cd"] = 1;
+    hasbtable["pwd"] = 2;
 }
 
 void microsha::run(void *args, size_t size)
 {
-    print("microsha by Kyzyl-ool.\nEnter 'exit' to finish the program.\n");
     print_invitation();
     read_stdin();
     while (IO_buffer != "exit") {
         std::vector<std::string> arguments = split_string_by_separator(IO_buffer, ' ');
-        std::string command = arguments[0];
-        arguments.erase(arguments.begin());
+        if (arguments.size() > 0)
+        {
+            std::string command = arguments[0];
+            if (arguments.size() > 1) {
+                arguments.erase(arguments.begin());
+                execute(hasbtable[command], 0, 1, arguments);
+            }
+            else {
+                std::vector<std::string> nullvec;
+                execute(hasbtable[command], 0, 1, nullvec);
+            }
         
 
-        //WORK SECTION
-        execute(hasbtable[command], 0, 1, arguments);
-        if (errno != 0) {
-            print(strerror(errno));
+            //WORK SECTION
+            
+            if (errno != 0) {
+                print(strerror(errno));
+            }
+            errno = 0;
         }
-        errno = 0;
 
         print_invitation();
         read_stdin();
@@ -119,6 +129,9 @@ void microsha::execute(int program_number, STANDARD_IO_ARGS, std::vector<std::st
     switch (program_number) {
         case 1:
             cd(fdi, fdo, arguments);
+            break;
+        case 2:
+            pwd(fdi, fdo);
             break;
         default:
             print("Unknown command.\n");
