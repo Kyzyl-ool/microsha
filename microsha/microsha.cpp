@@ -19,11 +19,12 @@ const int MAXDIR = 2048;
 
 microsha::microsha(std::string path)
 {
-    
+    hasbtable["cd"] = 1;
 }
 
 void microsha::run(void *args, size_t size)
 {
+    print("microsha by Kyzyl-ool.\nEnter 'exit' to finish the program.\n");
     print_invitation();
     read_stdin();
     while (IO_buffer != "exit") {
@@ -33,8 +34,18 @@ void microsha::run(void *args, size_t size)
         
 
         //WORK SECTION
-        cd(0, 1, arguments);
-
+        switch (hasbtable[command]) {
+            case 1:
+                cd(0, 1, arguments);
+                break;
+            default:
+                print("Unknown command.");
+        }
+        
+        if (errno != 0) {
+            print(strerror(errno));
+        }
+        errno = 0;
 
         print_invitation();
         read_stdin();

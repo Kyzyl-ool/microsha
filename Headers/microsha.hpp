@@ -22,8 +22,6 @@ const char METASYMBOL_QUESTION = '?';
 #include <string>
 #include <map>
 
-
-
 class microsha
 {
 private:
