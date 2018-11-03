@@ -10,6 +10,8 @@
 #define microsha_hpp
 
 #define VERSION "1.0"
+#define STANDARD_IO_ARGS int fdi, int fdo
+
 const char METASYMBOL_GREAT = '>';
 const char METASYMBOL_LESS  = '<';
 const char METASYMBOL_DASH  = '|';
@@ -18,14 +20,18 @@ const char METASYMBOL_QUESTION = '?';
 
 #include <stdio.h>
 #include <string>
+#include <map>
+
+
 
 class microsha
 {
 private:
-    std::string path = "";
     std::string IO_buffer = "";
     bool superuser = false;
     bool working = true;
+    std::map <std::string, int> hasbtable;
+    
 public:
     microsha(std::string path);
     
@@ -33,12 +39,16 @@ public:
     void print_invitation();
     void print_version();
     void read_stdin();
+    void add_slash_at_end(std::string str);
     
     template <typename T>
     void print(T str);
     
-    void cd(std::string arg = "");
-    void pwd();
+    
+    void cd(STANDARD_IO_ARGS, std::vector<std::string> args);
+    void pwd(STANDARD_IO_ARGS);
+    
+    std::string get_current_path();
 };
 
 #endif /* microsha_hpp */

@@ -12,11 +12,12 @@
 #include <iostream>
 #include <unistd.h>
 #include <fnmatch.h>
+#include <string>
+#include "stdio.h"
 
-#define HOME "Users/kyzyl-ool"
+const int MAXDIR = 2048;
 
-microsha::microsha(std::string path):
-path(path)
+microsha::microsha(std::string path)
 {
     
 }
@@ -24,19 +25,26 @@ path(path)
 void microsha::run(void *args, size_t size)
 {
     print_invitation();
-    /*read_stdin();
+    read_stdin();
     while (IO_buffer != "exit") {
-        std::vector<std::string> split = split_string_by_separator(IO_buffer, ' ');
-        print(split.size());
+        std::vector<std::string> arguments = split_string_by_separator(IO_buffer, ' ');
+        std::string command = arguments[0];
+        arguments.erase(arguments.begin());
+        
+
+        //WORK SECTION
+        cd(0, 1, arguments);
+
+
         print_invitation();
         read_stdin();
-    }*/
-    std::cout << fnmatch("*abba", "asdasdabbashdfgahsdgf", FNM_FILE_NAME);
+    }
+    
 }
 
 void microsha::print_invitation()
 {
-    printf("%s", last_symbol_in_string(path.c_str(), '/'));
+    printf("%s", last_symbol_in_string(get_current_path().c_str(), '/'));
     printf("%c", '>' - 29*superuser);
 }
 
@@ -63,23 +71,33 @@ bool isdirectory(std::string dir)
     return true;
 }
 
-void microsha::cd(std::string arg)
+void microsha::add_slash_at_end(std::string str)
 {
-    if (arg.size() == 0)
+    if (str.back() != '/')
+        str.push_back('/');
+}
+
+void microsha::cd(STANDARD_IO_ARGS, std::vector<std::string> args)
+{
+    if (args.size() == 0)
     {
-        path = HOME;
+        chdir(getenv("HOME"));
     }
-    else if (arg.size() == 1 && isdirectory(arg))
+    else if (args.size() == 1)
     {
-        path = arg;
-    }
-    else
-    {
-        print("'" + arg + "' is not a directory.\n");
+        add_slash_at_end(args[0]);
+        chdir(args[0].c_str());
     }
 }
 
-void microsha::pwd()
+std::string microsha::get_current_path()
 {
-    std::cout << path << std::endl;
+    char dir[MAXDIR];
+    getcwd(dir, MAXDIR);
+    return dir;
+}
+
+void microsha::pwd(STANDARD_IO_ARGS)
+{
+    dprintf(fdo, "%s\n", get_current_path().c_str());
 }
