@@ -67,3 +67,28 @@ std::vector<std::string> split_string_by_separator(std::string str, char sep)
     
     return result;
 }
+
+std::vector<std::string> get_arguments(std::string str)
+{
+    std::vector<std::string> result = split_string_by_separator(str, ' ');
+    
+    if (result.size() > 1)
+        result.erase(result.begin());
+    else
+    {
+        std::vector<std::string> empty;
+        return empty;
+    }
+    
+    return result;
+}
+
+std::string get_command_name(std::string str)
+{
+    std::vector<std::string> result = split_string_by_separator(str, ' ');
+    
+    if (result.size() > 0)
+        return result[0];
+    else
+        return "";
+}

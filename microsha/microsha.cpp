@@ -22,6 +22,8 @@ microsha::microsha(std::string path)
 {
     hasbtable["cd"] = 1;
     hasbtable["pwd"] = 2;
+    hasbtable[""] = 3;
+    hasbtable["time"] = 4;
 }
 
 void microsha::run(void *args, size_t size)
@@ -29,27 +31,12 @@ void microsha::run(void *args, size_t size)
     print_invitation();
     read_stdin();
     while (IO_buffer != "exit") {
-        std::vector<std::string> arguments = split_string_by_separator(IO_buffer, ' ');
-        if (arguments.size() > 0)
-        {
-            std::string command = arguments[0];
-            if (arguments.size() > 1) {
-                arguments.erase(arguments.begin());
-                execute(hasbtable[command], 0, 1, arguments);
-            }
-            else {
-                std::vector<std::string> nullvec;
-                execute(hasbtable[command], 0, 1, nullvec);
-            }
+        execute(hasbtable[get_command_name(IO_buffer)], 0, 1, get_arguments(IO_buffer));
         
-
-            //WORK SECTION
-            
-            if (errno != 0) {
-                print(strerror(errno));
-            }
-            errno = 0;
+        if (errno != 0) {
+            print(strerror(errno));
         }
+        errno = 0;
 
         print_invitation();
         read_stdin();
@@ -78,12 +65,6 @@ template <typename T>
 void microsha::print(T value)
 {
     std::cout << value << std::endl;
-}
-
-bool isdirectory(std::string dir)
-{
-    //NEED TO IMPLEMENT
-    return true;
 }
 
 void microsha::add_slash_at_end(std::string str)
@@ -120,8 +101,14 @@ void microsha::pwd(STANDARD_IO_ARGS)
 void microsha::time(STANDARD_IO_ARGS, std::vector<std::string> command)
 {
     
-//    clock_t start = clock();
-
+    clock_t start = clock();
+    std::vector<std::string> args = command;
+    args.erase(args.begin());
+    execute(hasbtable[command[0]], fdi, fdo, args);
+    clock_t end = clock();
+    
+    dprintf(2, "%.3lf secs\n",
+             (double)(end - start) / CLOCKS_PER_SEC);
 }
 
 void microsha::execute(int program_number, STANDARD_IO_ARGS, std::vector<std::string> arguments)
@@ -132,6 +119,11 @@ void microsha::execute(int program_number, STANDARD_IO_ARGS, std::vector<std::st
             break;
         case 2:
             pwd(fdi, fdo);
+            break;
+        case 3:
+            break;
+        case 4:
+            time(fdi, fdo, arguments);
             break;
         default:
             print("Unknown command.\n");

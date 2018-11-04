@@ -19,4 +19,7 @@ int amount_of_symbol_in_string(std::string string, const char symbol);
 char* last_symbol_in_string(const char* string, const char symbol);
 std::vector<std::string> split_string_by_separator(std::string str, char sep);
 
+std::vector<std::string> get_arguments(std::string str);
+std::string get_command_name(std::string str);
+
 #endif /* working_with_strings_hpp */
