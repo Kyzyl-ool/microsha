@@ -31,7 +31,7 @@ void microsha::run(void *args, size_t size)
     print_invitation();
     read_stdin();
     while (IO_buffer != "exit") {
-        execute(hasbtable[get_command_name(IO_buffer)], 0, 1, get_arguments(IO_buffer));
+        execute(0, 1, IO_buffer);
         
         if (errno != 0) {
             print(strerror(errno));
@@ -98,22 +98,21 @@ void microsha::pwd(STANDARD_IO_ARGS)
     dprintf(fdo, "%s\n", get_current_path().c_str());
 }
 
-void microsha::time(STANDARD_IO_ARGS, std::vector<std::string> command)
+void microsha::time(STANDARD_IO_ARGS, std::string command)
 {
-    
+    command.erase(0, 5);
     clock_t start = clock();
-    std::vector<std::string> args = command;
-    args.erase(args.begin());
-    execute(hasbtable[command[0]], fdi, fdo, args);
+    execute(fdi, fdo, command);
     clock_t end = clock();
     
     dprintf(2, "%.3lf secs\n",
              (double)(end - start) / CLOCKS_PER_SEC);
 }
 
-void microsha::execute(int program_number, STANDARD_IO_ARGS, std::vector<std::string> arguments)
+void microsha::execute(STANDARD_IO_ARGS, std::string command)
 {
-    switch (program_number) {
+    std::vector<std::string> arguments = get_arguments(command);
+    switch (hasbtable[get_command_name(command)]) {
         case 1:
             cd(fdi, fdo, arguments);
             break;
@@ -123,10 +122,27 @@ void microsha::execute(int program_number, STANDARD_IO_ARGS, std::vector<std::st
         case 3:
             break;
         case 4:
-            time(fdi, fdo, arguments);
+            time(fdi, fdo, command);
             break;
         default:
-            print("Unknown command.\n");
+//            print("Unknown command.\n");
+//            execl(get_current_path().c_str())
             break;
     }
+}
+
+void microsha::execute_external_program(std::vector<std::string> args)
+{
+    char** arguments = (char**)calloc(args.size(), sizeof (char*));
+    
+    for (int i = 0; i < args.size(); i++) {
+        arguments[i] = (char*)calloc(args[i].size(), sizeof (char));
+        strcpy(arguments[i], args[i].c_str());
+    }
+    
+    pid_t pid = fork();
+    if (pid == 0) {
+        execv(get_current_path().c_str(), arguments);
+    }
+    wait(&pid);
 }

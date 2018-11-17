@@ -92,3 +92,8 @@ std::string get_command_name(std::string str)
     else
         return "";
 }
+
+std::string strip_first_word(std::string str)
+{
+    return nullptr;
+}
