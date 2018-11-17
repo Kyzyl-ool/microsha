@@ -125,24 +125,29 @@ void microsha::execute(STANDARD_IO_ARGS, std::string command)
             time(fdi, fdo, command);
             break;
         default:
-//            print("Unknown command.\n");
-//            execl(get_current_path().c_str())
+            execute_external_program(command);
             break;
     }
 }
 
-void microsha::execute_external_program(std::vector<std::string> args)
+void microsha::execute_external_program(std::string command)
 {
-    char** arguments = (char**)calloc(args.size(), sizeof (char*));
+    std::string command_name = get_command_name(command);
+    std::vector<std::string> args = get_arguments(command);
     
+
+    char** arguments = (char**)calloc(args.size(), sizeof (char*));
+
     for (int i = 0; i < args.size(); i++) {
         arguments[i] = (char*)calloc(args[i].size(), sizeof (char));
         strcpy(arguments[i], args[i].c_str());
     }
     
+//    print((get_current_path()+command_name).c_str());
+    
     pid_t pid = fork();
     if (pid == 0) {
-        execv(get_current_path().c_str(), arguments);
+        execv((get_current_path()+command_name).c_str(), arguments);
     }
     wait(&pid);
 }

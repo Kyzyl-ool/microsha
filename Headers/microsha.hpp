@@ -39,7 +39,7 @@ public:
     void read_stdin();
     void add_slash_at_end(std::string str);
     void execute(STANDARD_IO_ARGS, std::string command);
-    void execute_external_program(std::vector<std::string> args);
+    void execute_external_program(std::string command);
     
     template <typename T>
     void print(T str);
