@@ -13,8 +13,9 @@
 #include <unistd.h>
 #include <fnmatch.h>
 #include <string>
-#include "stdio.h"
+#include <stdio.h>
 #include <time.h>
+#include <sys/wait.h>
 
 const int MAXDIR = 2048;
 
@@ -34,7 +35,7 @@ void microsha::run(void *args, size_t size)
         execute(0, 1, IO_buffer);
         
         if (errno != 0) {
-            print(strerror(errno));
+            perror("microsha");
         }
         errno = 0;
 
@@ -124,30 +125,34 @@ void microsha::execute(STANDARD_IO_ARGS, std::string command)
         case 4:
             time(fdi, fdo, command);
             break;
-        default:
-            execute_external_program(command);
+        default: {
+            pid_t pid = fork();
+            if (pid == 0) {
+                execute_external_program(fdi, fdo, command);
+            }
+            else    
+            {
+                int status;
+                wait(&status);
+            }
             break;
+        }
     }
 }
 
-void microsha::execute_external_program(std::string command)
+void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 {
+    if (fdi != 0) dup2(fdi, 0);
+    if (fdo != 0) dup2(fdo, 1);
     std::string command_name = get_command_name(command);
     std::vector<std::string> args = get_arguments(command);
-    
-
     char** arguments = (char**)calloc(args.size(), sizeof (char*));
-
     for (int i = 0; i < args.size(); i++) {
         arguments[i] = (char*)calloc(args[i].size(), sizeof (char));
         strcpy(arguments[i], args[i].c_str());
     }
     
-//    print((get_current_path()+command_name).c_str());
-    
-    pid_t pid = fork();
-    if (pid == 0) {
-        execv((get_current_path()+command_name).c_str(), arguments);
-    }
-    wait(&pid);
+    execv(command_name.c_str(), arguments);
+    perror(command_name.c_str());
+    exit(0);
 }
