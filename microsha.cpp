@@ -113,6 +113,9 @@ void microsha::time(STANDARD_IO_ARGS, std::string command)
 void microsha::execute(STANDARD_IO_ARGS, std::string command)
 {
     std::vector<std::string> arguments = get_arguments(command);
+
+
+
     switch (hasbtable[get_command_name(command)]) {
         case 1:
             cd(fdi, fdo, arguments);
@@ -144,15 +147,24 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 {
     if (fdi != 0) dup2(fdi, 0);
     if (fdo != 0) dup2(fdo, 1);
+    printf("FDI: %d\n", fdi);
+    printf("FDO: %d\n", fdo);
+
     std::string command_name = get_command_name(command);
     std::vector<std::string> args = get_arguments(command);
     char** arguments = (char**)calloc(args.size(), sizeof (char*));
     for (int i = 0; i < args.size(); i++) {
         arguments[i] = (char*)calloc(args[i].size(), sizeof (char));
         strcpy(arguments[i], args[i].c_str());
+        arguments[i][args[i].size()] = '\0';
     }
     
-    execv(command_name.c_str(), arguments);
-    perror(command_name.c_str());
+    if (arguments[0] == 0) {
+        char nullarg[] = "";
+        arguments[0] = nullarg;
+    }
+
+    execvp(command_name.c_str(), arguments);
+    // perror(command_name.c_str());
     exit(0);
 }
