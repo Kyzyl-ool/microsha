@@ -12,11 +12,11 @@
 #define VERSION "1.0"
 #define STANDARD_IO_ARGS int fdi, int fdo
 
-const char METASYMBOL_GREAT = '>';
-const char METASYMBOL_LESS  = '<';
-const char METASYMBOL_DASH  = '|';
-const char METASYMBOL_STAR  = '*';
-const char METASYMBOL_QUESTION = '?';
+//const char METASYMBOL_GREAT = '>';
+//const char METASYMBOL_LESS  = '<';
+//const char METASYMBOL_DASH  = '|';
+//const char METASYMBOL_STAR  = '*';
+//const char METASYMBOL_QUESTION = '?';
 
 #include <stdio.h>
 #include <string>
@@ -25,11 +25,11 @@ const char METASYMBOL_QUESTION = '?';
 class microsha
 {
 private:
-    std::string IO_buffer = "";
-    std::string home = "";
-    bool superuser = false;
-    bool working = true;
+    std::string IO_buffer;
+    std::string home;
+    bool superuser;
     std::map <std::string, int> hasbtable;
+    int mainfd[2];
     
 public:
     microsha(std::string path);
@@ -42,7 +42,7 @@ public:
     void execute(STANDARD_IO_ARGS, std::string command);
     void execute_external_program(STANDARD_IO_ARGS, std::string command);
     void conveyor(STANDARD_IO_ARGS, std::string command);
-    
+
     template <typename T>
     void print(T str);
     
