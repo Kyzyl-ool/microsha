@@ -25,10 +25,9 @@ const char METASYMBOL_QUESTION = '?';
 class microsha
 {
 private:
-    std::string IO_buffer = "";
-    std::string home = "";
-    bool superuser = false;
-    bool working = true;
+    std::string IO_buffer;
+    std::string home;
+    bool superuser;
     std::map <std::string, int> hasbtable;
     
 public:

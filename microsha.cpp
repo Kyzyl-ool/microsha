@@ -19,7 +19,9 @@
 
 const int MAXDIR = 2048;
 
-microsha::microsha(std::string path)
+microsha::microsha(std::string path):
+IO_buffer(""),
+superuser(false)
 {
     hasbtable["cd"] = 1;
     hasbtable["pwd"] = 2;
@@ -33,11 +35,10 @@ void microsha::run(void *args, size_t size)
 {
     print_invitation();
     read_stdin();
-    
+
     while (IO_buffer != "exit") {
-        // execute(0, 1, IO_buffer);
-        conveyor(0, 1, IO_buffer);
-        
+        execute(0, 1, IO_buffer);
+
         if (errno != 0) {
             perror("microsha");
         }
@@ -103,7 +104,7 @@ std::string microsha::get_current_path()
 
 void microsha::pwd(STANDARD_IO_ARGS)
 {
-    dprintf(fdo, "%s\n", get_current_path().c_str());
+    print(get_current_path().c_str());
 }
 
 void microsha::time(STANDARD_IO_ARGS, std::string command)
@@ -120,9 +121,6 @@ void microsha::time(STANDARD_IO_ARGS, std::string command)
 void microsha::execute(STANDARD_IO_ARGS, std::string command)
 {
     std::vector<std::string> arguments = get_arguments(command);
-
-
-
     switch (hasbtable[get_command_name(command)]) {
         case 1:
             cd(fdi, fdo, arguments);
@@ -136,15 +134,7 @@ void microsha::execute(STANDARD_IO_ARGS, std::string command)
             time(fdi, fdo, command);
             break;
         default: {
-            pid_t pid = fork();
-            if (pid == 0) {
-                execute_external_program(fdi, fdo, command);
-            }
-            else    
-            {
-                int status;
-                wait(&status);
-            }
+            execute_external_program(fdi, fdo, command);
             break;
         }
     }
@@ -152,11 +142,6 @@ void microsha::execute(STANDARD_IO_ARGS, std::string command)
 
 void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 {
-    if (fdi != 0) dup2(fdi, 0);
-    if (fdo != 0) dup2(fdo, 1);
-    // printf("FDI: %d\n", fdi);
-    // printf("FDO: %d\n", fdo);
-
     std::string command_name = get_command_name(command);
     std::vector<std::string> args = get_arguments(command);
     char** arguments = (char**)calloc(args.size(), sizeof (char*));
@@ -189,5 +174,5 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
         execute(fdi, fdo, command);
     }
 
-    
+
 }
