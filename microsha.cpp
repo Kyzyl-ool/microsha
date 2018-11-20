@@ -153,8 +153,8 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 {
     if (fdi != 0) dup2(fdi, 0);
     if (fdo != 0) dup2(fdo, 1);
-    printf("FDI: %d\n", fdi);
-    printf("FDO: %d\n", fdo);
+    // printf("FDI: %d\n", fdi);
+    // printf("FDO: %d\n", fdo);
 
     std::string command_name = get_command_name(command);
     std::vector<std::string> args = get_arguments(command);
@@ -171,14 +171,22 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
     }
 
     execvp(command_name.c_str(), arguments);
-    // perror(command_name.c_str());
+    perror(command_name.c_str());
     exit(0);
 }
 
 void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 {
     std::vector<std::string> conv = split_string_by_separator(command, '|');
-    for (int i = 0; i < conv.size(); i++) {
-        printf("%d: %s\n", i, conv[i].c_str());
+
+    if (conv.size() > 1) {
+        for (int i = 0; i < conv.size(); i++) {
+            printf("%d: %s\n", i, conv[i].c_str());
+        }
     }
+    else {
+        execute(fdi, fdo, command);
+    }
+
+    
 }
