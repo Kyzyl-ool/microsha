@@ -37,8 +37,6 @@ working(true)
 
 void microsha::run(void *args, size_t size)
 {
-
-
     while (working) {
         print_invitation();
         read_stdin();
@@ -50,6 +48,10 @@ void microsha::run(void *args, size_t size)
             perror("microsha");
             errno = 0;
         }
+        close(new_input);
+        close(new_output);
+
+//        printf("[%d]", IO_buffer.c_str()[0]);
     }
 }
 
