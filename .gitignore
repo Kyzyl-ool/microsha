@@ -1,3 +1,5 @@
 *.pbxproj
 microsha.xcodeproj/
 a.out
+.idea/
+cmake-build-debug/
