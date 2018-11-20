@@ -40,6 +40,7 @@ void microsha::run(void *args, size_t size)
     while (working) {
         print_invitation();
         read_stdin();
+
         int new_input = dup(0);
         int new_output = dup(1);
         execute(new_input, new_output, IO_buffer);
@@ -48,9 +49,9 @@ void microsha::run(void *args, size_t size)
             perror("microsha");
             errno = 0;
         }
+
         close(new_input);
         close(new_output);
-
 //        printf("[%d]", IO_buffer.c_str()[0]);
     }
 }
@@ -130,32 +131,22 @@ void microsha::execute(STANDARD_IO_ARGS, std::string command)
     switch (hasbtable[get_command_name(command)]) {
         case 1:
             cd(fdi, fdo, arguments);
-            close(fdi);
-            close(fdo);
             break;
         case 2:
             pwd(fdi, fdo);
-            close(fdi);
-            close(fdo);
             break;
         case 3:
             break;
         case 4:
             time(fdi, fdo, command);
-            close(fdi);
-            close(fdo);
             break;
         case 5:
             working = false;
-            close(fdi);
-            close(fdo);
             break;
         default: {
             pid_t pid = fork();
             if (pid == 0) {
                 execute_external_program(fdi, fdo, command);
-                close(fdi);
-                close(fdo);
                 perror("microsha");
                 exit(0);
             }
@@ -163,8 +154,6 @@ void microsha::execute(STANDARD_IO_ARGS, std::string command)
             {
                 int status;
                 wait(&status);
-                close(fdi);
-                close(fdo);
             }
             break;
         }
@@ -183,18 +172,11 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
             strcpy(arguments[i], args[i].c_str());
             arguments[i][args[i].size()] = '\0';
         }
+        execvp(command_name.c_str(), arguments);
     }
     else {
         execvp(command_name.c_str(), NULL);
-        close(fdi);
-        close(fdo);
-        perror(command_name.c_str());
-        exit(0);
     }
-
-    execvp(command_name.c_str(), arguments);
-    close(fdi);
-    close(fdo);
     perror(command_name.c_str());
     exit(0);
 }
