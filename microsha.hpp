@@ -28,6 +28,7 @@ private:
     std::string IO_buffer;
     std::string home;
     bool superuser;
+    bool working;
     std::map <std::string, int> hasbtable;
     
 public:

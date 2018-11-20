@@ -16,17 +16,20 @@
 #include <stdio.h>
 #include <time.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 const int MAXDIR = 2048;
 
 microsha::microsha(std::string path):
 IO_buffer(""),
-superuser(false)
+superuser(false),
+working(true)
 {
     hasbtable["cd"] = 1;
     hasbtable["pwd"] = 2;
     hasbtable[""] = 3;
     hasbtable["time"] = 4;
+    hasbtable["exit"] = 5;
 
 
     home = getenv("HOME");
@@ -34,27 +37,19 @@ superuser(false)
 
 void microsha::run(void *args, size_t size)
 {
-    print_invitation();
-    read_stdin();
 
-    while (IO_buffer != "exit") {
-        pid_t pid = fork();
-        if (pid == 0) {
-            int new_input = dup(0);
-            int new_output = dup(1);
-            execute(new_input, new_output, IO_buffer);
-            close(new_input);
-            close(new_output);
-            perror("microsha");
-            exit(0);
-        }
-        else {
-            int status;
-            wait(&status);
-        }
 
+    while (working) {
         print_invitation();
         read_stdin();
+        int new_input = dup(0);
+        int new_output = dup(1);
+        execute(new_input, new_output, IO_buffer);
+        if (errno)
+        {
+            perror("microsha");
+            errno = 0;
+        }
     }
 }
 
@@ -133,17 +128,42 @@ void microsha::execute(STANDARD_IO_ARGS, std::string command)
     switch (hasbtable[get_command_name(command)]) {
         case 1:
             cd(fdi, fdo, arguments);
+            close(fdi);
+            close(fdo);
             break;
         case 2:
             pwd(fdi, fdo);
+            close(fdi);
+            close(fdo);
             break;
         case 3:
             break;
         case 4:
             time(fdi, fdo, command);
+            close(fdi);
+            close(fdo);
+            break;
+        case 5:
+            working = false;
+            close(fdi);
+            close(fdo);
             break;
         default: {
-            execute_external_program(fdi, fdo, command);
+            pid_t pid = fork();
+            if (pid == 0) {
+                execute_external_program(fdi, fdo, command);
+                close(fdi);
+                close(fdo);
+                perror("microsha");
+                exit(0);
+            }
+            else
+            {
+                int status;
+                wait(&status);
+                close(fdi);
+                close(fdo);
+            }
             break;
         }
     }
@@ -153,7 +173,7 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 {
     std::string command_name = get_command_name(command);
     std::vector<std::string> args = get_arguments(command);
-    char **arguments = NULL;
+    char **arguments = nullptr;
     if (args.size() > 0) {
         arguments = (char **) calloc(args.size(), sizeof(char *));
         for (int i = 0; i < args.size(); i++) {
@@ -162,13 +182,17 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
             arguments[i][args[i].size()] = '\0';
         }
     }
-    
-//    if (arguments[0] == 0) {
-//        char nullarg[] = "";
-//        arguments[0] = nullarg;
-//    }
+    else {
+        execvp(command_name.c_str(), NULL);
+        close(fdi);
+        close(fdo);
+        perror(command_name.c_str());
+        exit(0);
+    }
 
     execvp(command_name.c_str(), arguments);
+    close(fdi);
+    close(fdo);
     perror(command_name.c_str());
     exit(0);
 }
