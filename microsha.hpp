@@ -41,6 +41,7 @@ public:
     void add_slash_at_end(std::string str);
     void execute(STANDARD_IO_ARGS, std::string command);
     void execute_external_program(STANDARD_IO_ARGS, std::string command);
+    void conveyor(STANDARD_IO_ARGS, std::string command);
     
     template <typename T>
     void print(T str);

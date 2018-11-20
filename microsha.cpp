@@ -34,7 +34,8 @@ void microsha::run(void *args, size_t size)
     print_invitation();
     read_stdin();
     while (IO_buffer != "exit") {
-        execute(0, 1, IO_buffer);
+        // execute(0, 1, IO_buffer);
+        conveyor(0, 1, IO_buffer);
         
         if (errno != 0) {
             perror("microsha");
@@ -172,4 +173,12 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
     execvp(command_name.c_str(), arguments);
     // perror(command_name.c_str());
     exit(0);
+}
+
+void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
+{
+    std::vector<std::string> conv = split_string_by_separator(command, '|');
+    for (int i = 0; i < conv.size(); i++) {
+        printf("%d: %s\n", i, conv[i].c_str());
+    }
 }

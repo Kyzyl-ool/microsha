@@ -57,12 +57,14 @@ std::vector<std::string> split_string_by_separator(std::string str, char sep)
     
     char* s = new char[str.size() + 1];
     strcpy(s, str.c_str());
-    char* pch = strtok(s, " ");
+    std::string tok = "  ";
+    tok[1] = sep;
+    char* pch = strtok(s, tok.c_str());
     
     while (pch != NULL)
     {
         result.push_back(pch);
-        pch = strtok(NULL, " ");
+        pch = strtok(NULL, tok.c_str());
     }
     
     return result;
