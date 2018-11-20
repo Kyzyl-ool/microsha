@@ -31,7 +31,6 @@ working(true)
     hasbtable["time"] = 4;
     hasbtable["exit"] = 5;
 
-
     home = getenv("HOME");
 }
 
@@ -95,7 +94,7 @@ void microsha::cd(STANDARD_IO_ARGS, std::vector<std::string> args)
     else if (args.size() == 1)
     {
         std::string::size_type index;
-        while((index=args[0].find("~"))!=std::string::npos) 
+        while((index=args[0].find("~"))!=std::string::npos)
         args[0].replace(index, 1, home);
         add_slash_at_end(args[0]);
         chdir(args[0].c_str());
@@ -128,6 +127,7 @@ void microsha::time(STANDARD_IO_ARGS, std::string command)
 void microsha::execute(STANDARD_IO_ARGS, std::string command)
 {
     printf("fdi: %d, fdo: %d\n", fdi, fdo);
+    dup2(fdi, 0); dup2(fdo, 1);
     std::vector<std::string> arguments = get_arguments(command);
     switch (hasbtable[get_command_name(command)]) {
         case 1:
@@ -186,7 +186,17 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 {
     std::vector<std::string> conv = split_string_by_separator(command, '|');
 
-    if (conv.size() > 1) {
+    if (conv.size() == 2) {
+        int* fd = new int[2];
+        pipe(fd);
+
+        execute(fdi, fd[1], conv[0]);
+        execute(fd[0], fdo, conv[1]);
+
+        close(fd[0]);
+        close(fd[1]);
+    }
+    else if (conv.size() > 2) {
         for (int i = 0; i < conv.size(); i++) {
             printf("%d: %s\n", i, conv[i].c_str());
         }
