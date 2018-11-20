@@ -43,7 +43,8 @@ void microsha::run(void *args, size_t size)
 
         int new_input = dup(0);
         int new_output = dup(1);
-        execute(new_input, new_output, IO_buffer);
+//        execute(new_input, new_output, IO_buffer);
+        conveyor(new_input, new_output, IO_buffer);
         if (errno)
         {
             perror("microsha");
