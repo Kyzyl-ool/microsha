@@ -33,6 +33,7 @@ void microsha::run(void *args, size_t size)
 {
     print_invitation();
     read_stdin();
+    
     while (IO_buffer != "exit") {
         // execute(0, 1, IO_buffer);
         conveyor(0, 1, IO_buffer);
