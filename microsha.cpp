@@ -25,6 +25,8 @@ microsha::microsha(std::string path)
     hasbtable["pwd"] = 2;
     hasbtable[""] = 3;
     hasbtable["time"] = 4;
+
+    home = getenv("HOME");
 }
 
 void microsha::run(void *args, size_t size)
@@ -82,6 +84,9 @@ void microsha::cd(STANDARD_IO_ARGS, std::vector<std::string> args)
     }
     else if (args.size() == 1)
     {
+        std::string::size_type index;
+        while((index=args[0].find("~"))!=std::string::npos) 
+        args[0].replace(index, 1, home);
         add_slash_at_end(args[0]);
         chdir(args[0].c_str());
     }
