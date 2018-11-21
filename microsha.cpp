@@ -126,7 +126,7 @@ void microsha::time(STANDARD_IO_ARGS, std::string command)
 
 void microsha::execute(STANDARD_IO_ARGS, std::string command)
 {
-    printf("fdi: %d, fdo: %d\n", fdi, fdo);
+//    printf("fdi: %d, fdo: %d\n", fdi, fdo);
     std::vector<std::string> arguments = get_arguments(command);
     switch (hasbtable[get_command_name(command)]) {
         case 1:
@@ -197,9 +197,17 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
         execute(fd[0], fdo, conv[1]);
     }
     else if (conv.size() > 2) {
-        for (int i = 0; i < conv.size(); i++) {
-            printf("%d: %s\n", i, conv[i].c_str());
+        int fd[conv.size()-1][2];
+        for (int i = 0; i < conv.size() - 1; i++) {
+            pipe(fd[i]);
         }
+
+        execute(fdi, fd[0][1], conv[0]);
+        for (int i = 1; i < conv.size()-1; i++) {
+            execute(fd[i-1][0], fd[i][1], conv[i]);
+        }
+        execute(fd[conv.size()-2][0], fdo, conv[conv.size()-1]);
+
     }
     else {
         execute(fdi, fdo, command);
