@@ -41,7 +41,12 @@ void microsha::run(void *args, size_t size)
         print_invitation();
         read_stdin();
 
-        print(parse(IO_buffer));
+        print(glue_strings_by(split_string_by_separator(IO_buffer, ' '), ':'));
+
+//        if (IO_buffer[0] == '/')
+//            print(find_matching_files(IO_buffer, "/"));
+//        else
+//            print(find_matching_files(IO_buffer, get_current_path()));
 
 //        conveyor(0, 1, IO_buffer);
         if (errno)
@@ -157,7 +162,7 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
         std::vector<std::string> args = get_arguments(command);
 
 //        for (int i = 0; i < args.size(); i++) {
-//            args[i] = parse(args[i]);
+//            args[i] = find_matching_files(args[i]);
 //        }
 
         if (args.size() > 0) {
@@ -226,29 +231,27 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 
 }
 
-std::string microsha::parse(std::string str) {
 
-    auto files = get_files_in_directory(get_current_path());
+
+std::string parseOneDepth(std::string expression) {
+
+}
+
+std::vector<std::string> microsha::find_matching_files(std::string pattern, std::string directory) {
+    auto files = get_files_in_directory(directory);
     std::vector <std::string> matching_files;
     int result_size = 0;
     int words_count = 0;
 
     for (int i = 0; i < files.size(); i++) {
-        if (files[i] != ".." && files[i] != "." && !fnmatch(str.c_str(), files[i].c_str(), FNM_PATHNAME)) {
+        if (files[i] != ".." && files[i] != "." && !fnmatch(pattern.c_str(), files[i].c_str(), FNM_PATHNAME)) {
             matching_files.push_back(files[i]);
             result_size += files[i].size();
             words_count++;
         }
     }
 
-    char *result = (char *) calloc(result_size+words_count, sizeof(char));
-    for (int i = 0; i < matching_files.size(); i++) {
-        strcat(result, matching_files[i].c_str());
-        strcat(result, " ");
-    }
-
-    return result;
-
+    return matching_files;
 }
 
 std::vector <std::string> microsha::get_files_in_directory(std::string dirname) {

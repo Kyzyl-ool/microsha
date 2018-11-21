@@ -53,7 +53,7 @@ public:
     
     
     std::string get_current_path();
-    std::string parse(std::string str);
+    std::vector<std::string> find_matching_files(std::string pattern, std::string directory);
     std::vector <std::string> get_files_in_directory(std::string dir);
 };
 

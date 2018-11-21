@@ -22,5 +22,6 @@ std::vector<std::string> split_string_by_separator(std::string str, char sep);
 std::vector<std::string> get_arguments(std::string str);
 std::string get_command_name(std::string str);
 std::string strip_first_word(std::string str);
+std::string glue_strings_by(std::vector<std::string> strings, char sep);
 
 #endif /* working_with_strings_hpp */

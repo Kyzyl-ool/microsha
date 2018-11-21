@@ -102,3 +102,15 @@ std::string strip_first_word(std::string str)
     std::string null = "";
     return null;
 }
+
+std::string glue_strings_by(std::vector<std::string> strings, char sep)
+{
+    std::string result;
+
+    for (int i = 0; i < strings.size(); i++) {
+        result += strings[i]+sep;
+    }
+    result[result.size()-1] = '\0';
+
+    return result;
+}
