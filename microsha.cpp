@@ -164,11 +164,15 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
                 arguments[i][args[i-1].size()] = '\0';
             }
             arguments[args.size()+1] = NULL;
-
             execvp(command_name.c_str(), arguments);
+
+
         } else {
-            char** null = (char** )calloc(1, sizeof(char*));
-            null[0] = (char* )calloc(1, sizeof(char));
+            char** null = (char** )calloc(2, sizeof(char*));
+            null[0] = (char* )calloc(get_current_path().size(), sizeof(char));
+            strcpy(null[0], get_current_path().c_str());
+            null[1] = (char* )calloc(1, sizeof(char));
+            null[1] = NULL;
             execvp(command_name.c_str(), null);
         }
         perror(command_name.c_str());
