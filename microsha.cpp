@@ -159,9 +159,8 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
         if (fdo != 1) dup2(fdo, 1);
         std::string command_name = get_command_name(command);
         std::vector<std::string> args = get_arguments(command);
-        char **arguments = nullptr;
         if (args.size() > 0) {
-            arguments = (char **) calloc(args.size() + 1, sizeof(char *));
+            char** arguments = (char **) calloc(args.size() + 1, sizeof(char *));
             for (int i = 0; i < args.size(); i++) {
                 arguments[i] = (char *) calloc(args[i].size(), sizeof(char));
                 strcpy(arguments[i], args[i].c_str());
@@ -170,7 +169,9 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
             arguments[args.size()] = NULL;
             execvp(command_name.c_str(), arguments);
         } else {
-            execvp(command_name.c_str(), NULL);
+            char** null = (char** )calloc(1, sizeof(char*));
+            null[0] = (char* )calloc(1, sizeof(char));
+            execvp(command_name.c_str(), null);
         }
         perror(command_name.c_str());
         exit(0);
@@ -194,9 +195,6 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 
         execute(fdi, fd[1], conv[0]);
         execute(fd[0], fdo, conv[1]);
-
-//        close(fd[0]);
-//        close(fd[1]);
     }
     else if (conv.size() > 2) {
         for (int i = 0; i < conv.size(); i++) {
