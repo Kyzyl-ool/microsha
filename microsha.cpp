@@ -17,6 +17,7 @@
 #include <time.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <dirent.h>
 
 const int MAXDIR = 2048;
 
@@ -40,7 +41,9 @@ void microsha::run(void *args, size_t size)
         print_invitation();
         read_stdin();
 
-        conveyor(0, 1, IO_buffer);
+        print(parse(IO_buffer));
+
+//        conveyor(0, 1, IO_buffer);
         if (errno)
         {
             perror("microsha");
@@ -152,6 +155,11 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
         if (fdo != 1) dup2(fdo, 1);
         std::string command_name = get_command_name(command);
         std::vector<std::string> args = get_arguments(command);
+
+//        for (int i = 0; i < args.size(); i++) {
+//            args[i] = parse(args[i]);
+//        }
+
         if (args.size() > 0) {
             char** arguments = (char **) calloc(args.size() + 2, sizeof(char *));
             arguments[0] = (char* )calloc(get_current_path().size(), sizeof(char));
@@ -216,4 +224,30 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
     }
 
 
+}
+
+std::string microsha::parse(std::string str) {
+
+    auto R = get_files_in_directory(get_current_path());
+    for (int i = 0; i < R.size(); i++) {
+        print(R[i]);
+    }
+    return str;
+}
+
+std::vector <std::string> microsha::get_files_in_directory(std::string dirname) {
+    std::vector <std::string> result;
+    DIR* dir;
+    struct dirent* ent;
+    if ((dir = opendir(dirname.c_str())) != NULL) {
+        while ((ent = readdir(dir)) != NULL) {
+            result.push_back(ent->d_name);
+        }
+    }
+    else {
+        perror("get_files_in_directory");
+        return result;
+    }
+
+    return result;
 }

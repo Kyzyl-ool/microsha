@@ -53,6 +53,8 @@ public:
     
     
     std::string get_current_path();
+    std::string parse(std::string str);
+    std::vector <std::string> get_files_in_directory(std::string dir);
 };
 
 #endif /* microsha_hpp */
