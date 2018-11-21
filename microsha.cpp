@@ -40,19 +40,12 @@ void microsha::run(void *args, size_t size)
         print_invitation();
         read_stdin();
 
-//        int new_input = dup(0);
-//        int new_output = dup(1);
-//        execute(new_input, new_output, IO_buffer);
         conveyor(0, 1, IO_buffer);
         if (errno)
         {
             perror("microsha");
             errno = 0;
         }
-
-//        close(new_input);
-//        close(new_output);
-//        printf("[%d]", IO_buffer.c_str()[0]);
     }
 }
 
@@ -160,13 +153,18 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
         std::string command_name = get_command_name(command);
         std::vector<std::string> args = get_arguments(command);
         if (args.size() > 0) {
-            char** arguments = (char **) calloc(args.size() + 1, sizeof(char *));
-            for (int i = 0; i < args.size(); i++) {
-                arguments[i] = (char *) calloc(args[i].size(), sizeof(char));
-                strcpy(arguments[i], args[i].c_str());
-                arguments[i][args[i].size()] = '\0';
+            char** arguments = (char **) calloc(args.size() + 2, sizeof(char *));
+            arguments[0] = (char* )calloc(get_current_path().size(), sizeof(char));
+            strcpy(arguments[0], get_current_path().c_str());
+            arguments[0][get_current_path().size()] = '\0';
+
+            for (int i = 1; i < args.size()+1; i++) {
+                arguments[i] = (char *) calloc(args[i-1].size()+1, sizeof(char));
+                strcpy(arguments[i], args[i-1].c_str());
+                arguments[i][args[i-1].size()] = '\0';
             }
-            arguments[args.size()] = NULL;
+            arguments[args.size()+1] = NULL;
+
             execvp(command_name.c_str(), arguments);
         } else {
             char** null = (char** )calloc(1, sizeof(char*));

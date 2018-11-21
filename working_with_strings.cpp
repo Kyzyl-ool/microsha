@@ -70,12 +70,20 @@ std::vector<std::string> split_string_by_separator(std::string str, char sep)
     return result;
 }
 
+std::string parse(std::string str) {
+    return str;
+}
+
 std::vector<std::string> get_arguments(std::string str)
 {
     std::vector<std::string> result = split_string_by_separator(str, ' ');
     
-    if (result.size() > 1)
+    if (result.size() > 1) {
         result.erase(result.begin());
+        for (int i = 0; i < result.size(); i++) {
+            result[i] = parse(result[i]);
+        }
+    }
     else
     {
         std::vector<std::string> empty;
