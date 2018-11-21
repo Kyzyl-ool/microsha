@@ -228,11 +228,27 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 
 std::string microsha::parse(std::string str) {
 
-    auto R = get_files_in_directory(get_current_path());
-    for (int i = 0; i < R.size(); i++) {
-        print(R[i]);
+    auto files = get_files_in_directory(get_current_path());
+    std::vector <std::string> matching_files;
+    int result_size = 0;
+    int words_count = 0;
+
+    for (int i = 0; i < files.size(); i++) {
+        if (files[i] != ".." && files[i] != "." && !fnmatch(str.c_str(), files[i].c_str(), FNM_PATHNAME)) {
+            matching_files.push_back(files[i]);
+            result_size += files[i].size();
+            words_count++;
+        }
     }
-    return str;
+
+    char *result = (char *) calloc(result_size+words_count, sizeof(char));
+    for (int i = 0; i < matching_files.size(); i++) {
+        strcat(result, matching_files[i].c_str());
+        strcat(result, " ");
+    }
+
+    return result;
+
 }
 
 std::vector <std::string> microsha::get_files_in_directory(std::string dirname) {
