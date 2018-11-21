@@ -40,18 +40,18 @@ void microsha::run(void *args, size_t size)
         print_invitation();
         read_stdin();
 
-        int new_input = dup(0);
-        int new_output = dup(1);
+//        int new_input = dup(0);
+//        int new_output = dup(1);
 //        execute(new_input, new_output, IO_buffer);
-        conveyor(new_input, new_output, IO_buffer);
+        conveyor(0, 1, IO_buffer);
         if (errno)
         {
             perror("microsha");
             errno = 0;
         }
 
-        close(new_input);
-        close(new_output);
+//        close(new_input);
+//        close(new_output);
 //        printf("[%d]", IO_buffer.c_str()[0]);
     }
 }
@@ -110,7 +110,7 @@ std::string microsha::get_current_path()
 
 void microsha::pwd(STANDARD_IO_ARGS)
 {
-    print(get_current_path().c_str());
+    printf("%s\n", get_current_path().c_str());
 }
 
 void microsha::time(STANDARD_IO_ARGS, std::string command)
@@ -127,7 +127,6 @@ void microsha::time(STANDARD_IO_ARGS, std::string command)
 void microsha::execute(STANDARD_IO_ARGS, std::string command)
 {
     printf("fdi: %d, fdo: %d\n", fdi, fdo);
-    dup2(fdi, 0); dup2(fdo, 1);
     std::vector<std::string> arguments = get_arguments(command);
     switch (hasbtable[get_command_name(command)]) {
         case 1:
@@ -145,41 +144,44 @@ void microsha::execute(STANDARD_IO_ARGS, std::string command)
             working = false;
             break;
         default: {
-            pid_t pid = fork();
-            if (pid == 0) {
-                execute_external_program(fdi, fdo, command);
-                perror("microsha");
-                exit(0);
-            }
-            else
-            {
-                int status;
-                wait(&status);
-            }
+            execute_external_program(fdi, fdo, command);
             break;
         }
     }
+
 }
 
 void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 {
-    std::string command_name = get_command_name(command);
-    std::vector<std::string> args = get_arguments(command);
-    char **arguments = nullptr;
-    if (args.size() > 0) {
-        arguments = (char **) calloc(args.size(), sizeof(char *));
-        for (int i = 0; i < args.size(); i++) {
-            arguments[i] = (char *) calloc(args[i].size(), sizeof(char));
-            strcpy(arguments[i], args[i].c_str());
-            arguments[i][args[i].size()] = '\0';
+    pid_t pid = fork();
+    if (pid == 0) {
+        if (fdi != 0) dup2(fdi, 0);
+        if (fdo != 1) dup2(fdo, 1);
+        std::string command_name = get_command_name(command);
+        std::vector<std::string> args = get_arguments(command);
+        char **arguments = nullptr;
+        if (args.size() > 0) {
+            arguments = (char **) calloc(args.size() + 1, sizeof(char *));
+            for (int i = 0; i < args.size(); i++) {
+                arguments[i] = (char *) calloc(args[i].size(), sizeof(char));
+                strcpy(arguments[i], args[i].c_str());
+                arguments[i][args[i].size()] = '\0';
+            }
+            arguments[args.size()] = NULL;
+            execvp(command_name.c_str(), arguments);
+        } else {
+            execvp(command_name.c_str(), NULL);
         }
-        execvp(command_name.c_str(), arguments);
+        perror(command_name.c_str());
+        exit(0);
     }
     else {
-        execvp(command_name.c_str(), NULL);
+        int status;
+        wait(&status);
+
+        if (fdi != 0) close(fdi);
+        if (fdo != 1) close(fdo);
     }
-    perror(command_name.c_str());
-    exit(0);
 }
 
 void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
@@ -193,8 +195,8 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
         execute(fdi, fd[1], conv[0]);
         execute(fd[0], fdo, conv[1]);
 
-        close(fd[0]);
-        close(fd[1]);
+//        close(fd[0]);
+//        close(fd[1]);
     }
     else if (conv.size() > 2) {
         for (int i = 0; i < conv.size(); i++) {
