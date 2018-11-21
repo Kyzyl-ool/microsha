@@ -42,6 +42,7 @@ public:
     void execute(STANDARD_IO_ARGS, std::string command);
     void execute_external_program(STANDARD_IO_ARGS, std::string command);
     void conveyor(STANDARD_IO_ARGS, std::string command);
+
     
     template <typename T>
     void print(T str);
@@ -55,6 +56,7 @@ public:
     std::string get_current_path();
     std::vector<std::string> find_matching_files(std::string pattern, std::string directory);
     std::vector <std::string> get_files_in_directory(std::string dir);
+    std::string parseOneDepth(std::string expression);
 };
 
 #endif /* microsha_hpp */
