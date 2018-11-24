@@ -8,6 +8,7 @@
 
 #include "working_with_strings.hpp"
 #include <iostream>
+#include <regex>
 
 int amount_of_symbol_in_string(const char* string, const char symbol)
 {
@@ -113,4 +114,9 @@ std::string glue_strings_by(std::vector<std::string> strings, char sep)
     result[result.size()-1] = '\0';
 
     return result;
+}
+
+std::string replace(std::string str, std::string victim, std::string killer)
+{
+    return std::regex_replace(str, std::regex(victim), killer);
 }

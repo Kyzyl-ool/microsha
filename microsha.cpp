@@ -41,7 +41,6 @@ void microsha::run(void *args, size_t size)
         print_invitation();
         read_stdin();
 
-        print(parseOneDepth("/*e*/asd"));
 
 
 //        conveyor(0, 1, IO_buffer);
@@ -230,20 +229,7 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 
 
 std::string microsha::parseOneDepth(std::string expression) {
-    std::vector <std::string> result;
-    auto tmp = split_string_by_separator(expression, '/');
-    if (expression[0] == '/') {
-        auto matching_files = find_matching_files(tmp[0], "/");
-        for (int i = 0; i < matching_files.size(); i++) {
-            tmp[0] = matching_files[i];
-            result.push_back(glue_strings_by(tmp, '/'));
-        }
-    }
-    else {
-        print("HELLO");
-    }
 
-    return glue_strings_by(result, '\n');
 }
 
 std::vector<std::string> microsha::find_matching_files(std::string pattern, std::string directory) {

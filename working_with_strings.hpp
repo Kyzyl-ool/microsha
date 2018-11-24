@@ -23,5 +23,6 @@ std::vector<std::string> get_arguments(std::string str);
 std::string get_command_name(std::string str);
 std::string strip_first_word(std::string str);
 std::string glue_strings_by(std::vector<std::string> strings, char sep);
+std::string replace(std::string str, std::string victim, std::string killer);
 
 #endif /* working_with_strings_hpp */
