@@ -157,17 +157,19 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 
         std::vector <std::string> args2;
         for (int i = 0; i < args.size(); i++) {
-            std::vector<std::string> tmp = parseOneDepth(args[i]);
-            args2.insert(args2.end(), tmp.begin(), tmp.end());
+            std::vector<std::string> tmp;
+            if (args[i].find('*') != std::string::npos || args[i].find('?') != std::string::npos) {
+                tmp = parseOneDepth(args[i]);
+                args2.insert(args2.end(), tmp.begin(), tmp.end());
+            }
+            else {
+                args2.push_back(args[i]);
+            }
         }
 
         args = args2;
 
-        printf("cmd: %s, args: %s\n", get_command_name(command).c_str(), glue_strings_by(args, ';').c_str());
-
-//        for (int i = 0; i < args.size(); i++) {
-//            args[i] = find_matching_files(args[i]);
-//        }
+//        printf("cmd: %s, args: %s\n", get_command_name(command).c_str(), glue_strings_by(args, ';').c_str());
 
         if (args.size() > 0) {
             char** arguments = (char **) calloc(args.size() + 2, sizeof(char *));
@@ -180,7 +182,9 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
                 strcpy(arguments[i], args[i-1].c_str());
                 arguments[i][args[i-1].size()] = '\0';
             }
+
             arguments[args.size()+1] = NULL;
+
             execvp(command_name.c_str(), arguments);
 
 
