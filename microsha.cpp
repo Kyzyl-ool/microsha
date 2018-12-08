@@ -41,8 +41,7 @@ void microsha::run(void *args, size_t size)
     while (working) {
         print_invitation();
         read_stdin();
-        print(parseOneDepth(IO_buffer));
-//        conveyor(0, 1, IO_buffer);
+        conveyor(0, 1, IO_buffer);
         if (errno)
         {
             perror("microsha");
@@ -123,6 +122,13 @@ void microsha::execute(STANDARD_IO_ARGS, std::string command)
 {
 //    printf("fdi: %d, fdo: %d\n", fdi, fdo);
     std::vector<std::string> arguments = get_arguments(command);
+
+    for (int i = 0; i < arguments.size(); i++) {
+        arguments[i] = parseOneDepth(arguments[i]);
+    }
+
+//    printf("cmd: %s, args: %s\n", get_command_name(command).c_str(), glue_strings_by(arguments, ';').c_str());
+
     switch (hasbtable[get_command_name(command)]) {
         case 1:
             cd(fdi, fdo, arguments);
@@ -243,7 +249,7 @@ std::string microsha::parseOneDepth(std::string expression) {
 
     globfree(&glob_result);
 
-    return glue_strings_by(pathnames, ';');
+    return glue_strings_by(pathnames, ' ');
 
 }
 
