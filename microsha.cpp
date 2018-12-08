@@ -18,6 +18,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <glob.h>
 
 const int MAXDIR = 2048;
 
@@ -40,9 +41,7 @@ void microsha::run(void *args, size_t size)
     while (working) {
         print_invitation();
         read_stdin();
-
-
-
+        print(parseOneDepth(IO_buffer));
 //        conveyor(0, 1, IO_buffer);
         if (errno)
         {
@@ -229,6 +228,22 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 
 
 std::string microsha::parseOneDepth(std::string expression) {
+    glob_t glob_result;
+
+    int glob_return_value = glob(expression.c_str(), GLOB_TILDE, NULL, &glob_result);
+    if (glob_return_value != 0) {
+        globfree(&glob_result);
+        perror("glob");
+    }
+
+    std::vector <std::string> pathnames;
+    for (int i = 0; i < glob_result.gl_pathc; i++) {
+        pathnames.push_back(std::string(glob_result.gl_pathv[i]));
+    }
+
+    globfree(&glob_result);
+
+    return glue_strings_by(pathnames, ';');
 
 }
 
