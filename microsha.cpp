@@ -123,12 +123,6 @@ void microsha::execute(STANDARD_IO_ARGS, std::string command)
 //    printf("fdi: %d, fdo: %d\n", fdi, fdo);
     std::vector<std::string> arguments = get_arguments(command);
 
-    for (int i = 0; i < arguments.size(); i++) {
-        arguments[i] = parseOneDepth(arguments[i]);
-    }
-
-//    printf("cmd: %s, args: %s\n", get_command_name(command).c_str(), glue_strings_by(arguments, ';').c_str());
-
     switch (hasbtable[get_command_name(command)]) {
         case 1:
             cd(fdi, fdo, arguments);
@@ -160,6 +154,16 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
         if (fdo != 1) dup2(fdo, 1);
         std::string command_name = get_command_name(command);
         std::vector<std::string> args = get_arguments(command);
+
+        std::vector <std::string> args2;
+        for (int i = 0; i < args.size(); i++) {
+            std::vector<std::string> tmp = parseOneDepth(args[i]);
+            args2.insert(args2.end(), tmp.begin(), tmp.end());
+        }
+
+        args = args2;
+
+        printf("cmd: %s, args: %s\n", get_command_name(command).c_str(), glue_strings_by(args, ';').c_str());
 
 //        for (int i = 0; i < args.size(); i++) {
 //            args[i] = find_matching_files(args[i]);
@@ -233,7 +237,7 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 
 
 
-std::string microsha::parseOneDepth(std::string expression) {
+std::vector<std::string> microsha::parseOneDepth(std::string expression) {
     glob_t glob_result;
 
     int glob_return_value = glob(expression.c_str(), GLOB_TILDE, NULL, &glob_result);
@@ -249,7 +253,7 @@ std::string microsha::parseOneDepth(std::string expression) {
 
     globfree(&glob_result);
 
-    return glue_strings_by(pathnames, ' ');
+    return pathnames;
 
 }
 

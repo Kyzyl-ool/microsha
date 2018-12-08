@@ -56,7 +56,7 @@ public:
     std::string get_current_path();
     std::vector<std::string> find_matching_files(std::string pattern, std::string directory);
     std::vector <std::string> get_files_in_directory(std::string dir);
-    std::string parseOneDepth(std::string expression);
+    std::vector<std::string> parseOneDepth(std::string expression);
 };
 
 #endif /* microsha_hpp */
