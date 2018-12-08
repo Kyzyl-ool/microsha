@@ -39,8 +39,8 @@ public:
     void print_version();
     void read_stdin();
     void add_slash_at_end(std::string str);
-    void execute(STANDARD_IO_ARGS, std::string command);
-    void execute_external_program(STANDARD_IO_ARGS, std::string command);
+    int execute(STANDARD_IO_ARGS, std::string command);
+    int execute_external_program(STANDARD_IO_ARGS, std::string command);
     void conveyor(STANDARD_IO_ARGS, std::string command);
 
     
