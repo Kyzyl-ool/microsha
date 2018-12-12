@@ -65,9 +65,6 @@ void microsha::print_version()
 void microsha::read_stdin()
 {
     getline(std::cin, IO_buffer);
-    if (std::cin.peek() == EOF) {
-        working = false;
-    }
 }
 
 template <typename T>
@@ -119,11 +116,9 @@ void microsha::time(STANDARD_IO_ARGS, std::string command)
     
     dprintf(2, "%.3lf secs\n",
              (double)(end - start) / CLOCKS_PER_SEC);
-
-
 }
 
-int microsha::execute(STANDARD_IO_ARGS, std::string command)
+void microsha::execute(STANDARD_IO_ARGS, std::string command)
 {
 //    printf("fdi: %d, fdo: %d\n", fdi, fdo);
     std::vector<std::string> arguments = get_arguments(command);
@@ -144,15 +139,14 @@ int microsha::execute(STANDARD_IO_ARGS, std::string command)
             working = false;
             break;
         default: {
-            return execute_external_program(fdi, fdo, command);
+            execute_external_program(fdi, fdo, command);
             break;
         }
     }
 
-    return 0;
 }
 
-int microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
+void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 {
     pid_t pid = fork();
     if (pid == 0) {
@@ -179,7 +173,7 @@ int microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 
         if (args.size() > 0) {
             char** arguments = (char **) calloc(args.size() + 2, sizeof(char *));
-            arguments[0] = (char* )calloc(get_current_path().size()+1, sizeof(char));
+            arguments[0] = (char* )calloc(get_current_path().size(), sizeof(char));
             strcpy(arguments[0], get_current_path().c_str());
             arguments[0][get_current_path().size()] = '\0';
 
@@ -196,9 +190,8 @@ int microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 
         } else {
             char** null = (char** )calloc(2, sizeof(char*));
-            null[0] = (char* )calloc(get_current_path().size()+1, sizeof(char));
+            null[0] = (char* )calloc(get_current_path().size(), sizeof(char));
             strcpy(null[0], get_current_path().c_str());
-            null[0][get_current_path().size()] = '\0';
             null[1] = (char* )calloc(1, sizeof(char));
             null[1] = NULL;
             execvp(command_name.c_str(), null);
@@ -207,15 +200,12 @@ int microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
         exit(0);
     }
     else {
-//        int status;
-//        wait(&status);
-//
-//        if (fdi != 0) close(fdi);
-//        if (fdo != 1) close(fdo);
+        int status;
+        wait(&status);
 
-        return pid;
+        if (fdi != 0) close(fdi);
+        if (fdo != 1) close(fdo);
     }
-
 }
 
 void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
@@ -226,29 +216,21 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
         int* fd = new int[2];
         pipe(fd);
 
-        pid_t p1 = execute(fdi, fd[1], conv[0]);
-        pid_t p2 = execute(fd[0], fdo, conv[1]);
-
-        wait(&p1);
-        wait(&p2);
+        execute(fdi, fd[1], conv[0]);
+        execute(fd[0], fdo, conv[1]);
     }
     else if (conv.size() > 2) {
-        pid_t pids[conv.size()];
-
         int fd[conv.size()-1][2];
         for (int i = 0; i < conv.size() - 1; i++) {
             pipe(fd[i]);
         }
 
-        pids[0] = execute(fdi, fd[0][1], conv[0]);
+        execute(fdi, fd[0][1], conv[0]);
         for (int i = 1; i < conv.size()-1; i++) {
-            pids[i] = execute(fd[i-1][0], fd[i][1], conv[i]);
+            execute(fd[i-1][0], fd[i][1], conv[i]);
         }
-        pids[conv.size()-1] = execute(fd[conv.size()-2][0], fdo, conv[conv.size()-1]);
+        execute(fd[conv.size()-2][0], fdo, conv[conv.size()-1]);
 
-        for (int i = 0; i < conv.size(); i++) {
-            wait(&pids[i]);
-        }
     }
     else {
         execute(fdi, fdo, command);
