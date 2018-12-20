@@ -64,7 +64,12 @@ void microsha::print_version()
 
 void microsha::read_stdin()
 {
-    getline(std::cin, IO_buffer);
+    if (!std::cin.eof())
+    {
+        getline(std::cin, IO_buffer);
+    }
+    else
+        working = false;
 }
 
 template <typename T>
