@@ -221,7 +221,7 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
     }
     else {
         int status;
-        wait(&status);
+//        wait(&status);
         if (fdi != 0) close(fdi);
         if (fdo != 1) close(fdo);
     }
@@ -244,12 +244,12 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
                 return;
             }
         }
-    } else {
+    } else if (preconv.size() == 1) {
         preconv = split_string_by_separator(command, '>');
         if (preconv.size() == 2) {
             int output = open(remove_chars(preconv[1], ' ').c_str(), O_CREAT|O_APPEND|O_WRONLY, 0666);
             if (output != -1) {
-                printf("descr: %d\n", output);
+//                printf("descr: %d\n", output);
                 fdo = output;
             }
             else {
@@ -257,9 +257,19 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
                 return;
             }
         }
+        else if (preconv.size() != 1) {
+//            perror(get_command_name(command).c_str());
+            printf("Invalid syntax\n");
+            return;
+        }
+    }
+    else {
+//        perror(get_command_name(command).c_str());
+        printf("Invalid syntax\n");
+        return;
     }
 
-    print(preconv[0]);
+//    print(preconv[0]);
 
     std::vector<std::string> conv = split_string_by_separator(preconv[0], '|');
 
@@ -269,6 +279,9 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 
         execute(fdi, fd[1], conv[0]);
         execute(fd[0], fdo, conv[1]);
+        int status;
+        wait(&status);
+        printf("Status: %d\n", status);
     }
     else if (conv.size() > 2) {
         int fd[conv.size()-1][2];
