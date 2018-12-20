@@ -9,6 +9,7 @@
 #include "working_with_strings.hpp"
 #include <iostream>
 #include <regex>
+#include <algorithm>
 
 int amount_of_symbol_in_string(const char* string, const char symbol)
 {
@@ -119,4 +120,11 @@ std::string glue_strings_by(std::vector<std::string> strings, char sep)
 std::string replace(std::string str, std::string victim, std::string killer)
 {
     return std::regex_replace(str, std::regex(victim), killer);
+}
+
+std::string remove_chars(std::string str, char c)
+{
+    std::string result = str;
+    result.erase(std::remove(result.begin(), result.end(), c), result.end());
+    return result;
 }
