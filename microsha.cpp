@@ -168,38 +168,6 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
         std::string command_name = get_command_name(command);
         std::vector<std::string> args = get_arguments(command);
 
-        /*
-         * int input_descr = fdi, output_descr = fdo;
-    auto preconv = split_string_by_separator(command, '<');
-    if (preconv.size() == 2) {
-        preconv = split_string_by_separator(command, '<');
-        if (preconv.size() == 2) {
-            int input = open(remove_chars(preconv[1], ' ').c_str(), O_RDONLY);
-            if (input != -1) {
-                printf("descr: %d\n", input);
-                fdi = input;
-            }
-            else {
-//                perror(get_command_name(command).c_str());
-                return;
-            }
-        }
-    } else {
-        preconv = split_string_by_separator(command, '>');
-        if (preconv.size() == 2) {
-            int output = open(remove_chars(preconv[1], ' ').c_str(), O_CREAT|O_APPEND|O_WRONLY, 0666);
-            if (output != -1) {
-//                printf("descr: %d\n", output);
-                fdo = output;
-            }
-            else {
-//                perror(get_command_name(command).c_str());
-                return;
-            }
-        }
-    }
-         */
-
         std::vector <std::string> args2;
         for (int i = 0; i < args.size(); i++) {
             std::vector<std::string> tmp;
@@ -261,7 +229,39 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 
 void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 {
-    std::vector<std::string> conv = split_string_by_separator(command, '|');
+    int input_descr = fdi, output_descr = fdo;
+    auto preconv = split_string_by_separator(command, '<');
+    if (preconv.size() == 2) {
+        preconv = split_string_by_separator(command, '<');
+        if (preconv.size() == 2) {
+            int input = open(remove_chars(preconv[1], ' ').c_str(), O_RDONLY);
+            if (input != -1) {
+                printf("descr: %d\n", input);
+                fdi = input;
+            }
+            else {
+//                perror(get_command_name(command).c_str());
+                return;
+            }
+        }
+    } else {
+        preconv = split_string_by_separator(command, '>');
+        if (preconv.size() == 2) {
+            int output = open(remove_chars(preconv[1], ' ').c_str(), O_CREAT|O_APPEND|O_WRONLY, 0666);
+            if (output != -1) {
+                printf("descr: %d\n", output);
+                fdo = output;
+            }
+            else {
+//                perror(get_command_name(command).c_str());
+                return;
+            }
+        }
+    }
+
+    print(preconv[0]);
+
+    std::vector<std::string> conv = split_string_by_separator(preconv[0], '|');
 
     if (conv.size() == 2) {
         int* fd = new int[2];
@@ -284,7 +284,7 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 
     }
     else {
-        execute(fdi, fdo, command);
+        execute(fdi, fdo, preconv[0]);
     }
 
 
