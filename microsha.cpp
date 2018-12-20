@@ -40,6 +40,7 @@ working(true)
 
 void microsha::run(void *args, size_t size)
 {
+    signal(SIGINT, SIG_IGN);
     while (working) {
         print_invitation();
         read_stdin();
@@ -55,7 +56,7 @@ void microsha::run(void *args, size_t size)
 void microsha::print_invitation()
 {
     printf("%s", last_symbol_in_string(get_current_path().c_str(), '/'));
-    printf("%c", '>' - 29*superuser);
+    printf("%c", '>' - 29 * superuser);
 }
 
 void microsha::print_version()
@@ -163,6 +164,7 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 {
     pid_t pid = fork();
     if (pid == 0) {
+        signal(SIGINT, SIG_DFL);
         if (fdi != 0) dup2(fdi, 0);
         if (fdo != 1) dup2(fdo, 1);
         std::string command_name = get_command_name(command);
@@ -231,6 +233,10 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 {
     int input_descr = fdi, output_descr = fdo;
     auto preconv = split_string_by_separator(command, '<');
+    if (preconv.size() == 0)
+    {
+        return;
+    }
     if (preconv.size() == 2) {
         preconv = split_string_by_separator(command, '<');
         if (preconv.size() == 2) {
@@ -272,16 +278,13 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 //    print(preconv[0]);
 
     std::vector<std::string> conv = split_string_by_separator(preconv[0], '|');
-
     if (conv.size() == 2) {
         int* fd = new int[2];
         pipe(fd);
 
         execute(fdi, fd[1], conv[0]);
         execute(fd[0], fdo, conv[1]);
-        int status;
-        wait(&status);
-        printf("Status: %d\n", status);
+//        printf("Status: %d\n", status);
     }
     else if (conv.size() > 2) {
         int fd[conv.size()-1][2];
@@ -300,7 +303,8 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
         execute(fdi, fdo, preconv[0]);
     }
 
-
+    int status;
+    wait(&status);
 }
 
 
