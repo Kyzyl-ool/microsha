@@ -160,6 +160,12 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
             std::vector<std::string> tmp;
             if (args[i].find('*') != std::string::npos || args[i].find('?') != std::string::npos) {
                 tmp = parseOneDepth(args[i]);
+
+
+
+
+
+
                 args2.insert(args2.end(), tmp.begin(), tmp.end());
             }
             else {
@@ -173,7 +179,7 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 
         if (args.size() > 0) {
             char** arguments = (char **) calloc(args.size() + 2, sizeof(char *));
-            arguments[0] = (char* )calloc(get_current_path().size(), sizeof(char));
+            arguments[0] = (char* )calloc(get_current_path().size()+1, sizeof(char));
             strcpy(arguments[0], get_current_path().c_str());
             arguments[0][get_current_path().size()] = '\0';
 
@@ -190,7 +196,7 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
 
         } else {
             char** null = (char** )calloc(2, sizeof(char*));
-            null[0] = (char* )calloc(get_current_path().size(), sizeof(char));
+            null[0] = (char* )calloc(get_current_path().size()+1, sizeof(char));
             strcpy(null[0], get_current_path().c_str());
             null[1] = (char* )calloc(1, sizeof(char));
             null[1] = NULL;
@@ -248,6 +254,7 @@ std::vector<std::string> microsha::parseOneDepth(std::string expression) {
     if (glob_return_value != 0) {
         globfree(&glob_result);
         perror("glob");
+
     }
 
     std::vector <std::string> pathnames;
