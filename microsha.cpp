@@ -21,6 +21,7 @@
 #include <glob.h>
 #include <sys/times.h>
 
+
 const int MAXDIR = 2048;
 
 microsha::microsha(std::string path):
@@ -172,15 +173,11 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
             std::vector<std::string> tmp;
             if (args[i].find('*') != std::string::npos || args[i].find('?') != std::string::npos) {
                 tmp = parseOneDepth(args[i]);
-                if (errno != 0)
+                if (!strcmp(tmp[0].c_str(), GLOB_ERROR_STRING))
                 {
+//                    perror(command_name.c_str());
                     return;
                 }
-
-
-
-
-
 
                 args2.insert(args2.end(), tmp.begin(), tmp.end());
             }
@@ -218,13 +215,13 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
             null[1] = NULL;
             execvp(command_name.c_str(), null);
         }
+
         perror(command_name.c_str());
         exit(0);
     }
     else {
         int status;
         wait(&status);
-
         if (fdi != 0) close(fdi);
         if (fdo != 1) close(fdo);
     }
@@ -271,6 +268,7 @@ std::vector<std::string> microsha::parseOneDepth(std::string expression) {
     if (glob_return_value != 0) {
         globfree(&glob_result);
 //        perror("glob");
+        pathnames.push_back(GLOB_ERROR_STRING);
         return pathnames;
     }
 

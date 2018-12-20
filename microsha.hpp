@@ -11,6 +11,7 @@
 
 #define VERSION "1.0"
 #define STANDARD_IO_ARGS int fdi, int fdo
+#define GLOB_ERROR_STRING "GLOB_ERRORajshdfgkjahgdsfagsdfjhgsdf1381724827 qpdiad`galsfgAE8912Y9"
 
 const char METASYMBOL_GREAT = '>';
 const char METASYMBOL_LESS  = '<';
