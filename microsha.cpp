@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <glob.h>
+#include <sys/times.h>
 
 const int MAXDIR = 2048;
 
@@ -115,12 +116,18 @@ void microsha::pwd(STANDARD_IO_ARGS)
 void microsha::time(STANDARD_IO_ARGS, std::string command)
 {
     command.erase(0, 5);
-    clock_t start = clock();
+    struct tms t1, t2;
+    clock_t start = times(&t1);
     execute(fdi, fdo, command);
-    clock_t end = clock();
-    
-    dprintf(2, "%.3lf secs\n",
-             (double)(end - start) / CLOCKS_PER_SEC);
+    clock_t end = times(&t2);
+
+    dprintf(2, "Realtime: %.3lf secs\nSystime: %.3lf secs\nUsertime: %.3lf secs\n",
+             (double)(end - start) / CLOCKS_PER_SEC * 10000,
+            (double)(t2.tms_cstime - t1.tms_cstime) / CLOCKS_PER_SEC * 10000,
+            (double)(t2.tms_cutime - t1.tms_cutime) / CLOCKS_PER_SEC * 10000
+             );
+
+
 }
 
 void microsha::execute(STANDARD_IO_ARGS, std::string command)
