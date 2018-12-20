@@ -45,7 +45,7 @@ void microsha::run(void *args, size_t size)
         conveyor(0, 1, IO_buffer);
         if (errno)
         {
-            perror("microsha");
+            perror(get_command_name(IO_buffer).c_str());
             errno = 0;
         }
     }
@@ -172,6 +172,10 @@ void microsha::execute_external_program(STANDARD_IO_ARGS, std::string command)
             std::vector<std::string> tmp;
             if (args[i].find('*') != std::string::npos || args[i].find('?') != std::string::npos) {
                 tmp = parseOneDepth(args[i]);
+                if (errno != 0)
+                {
+                    return;
+                }
 
 
 
@@ -262,14 +266,14 @@ void microsha::conveyor(STANDARD_IO_ARGS, std::string command)
 std::vector<std::string> microsha::parseOneDepth(std::string expression) {
     glob_t glob_result;
 
+    std::vector <std::string> pathnames;
     int glob_return_value = glob(expression.c_str(), GLOB_TILDE, NULL, &glob_result);
     if (glob_return_value != 0) {
         globfree(&glob_result);
-        perror("glob");
-
+//        perror("glob");
+        return pathnames;
     }
 
-    std::vector <std::string> pathnames;
     for (int i = 0; i < glob_result.gl_pathc; i++) {
         pathnames.push_back(std::string(glob_result.gl_pathv[i]));
     }
